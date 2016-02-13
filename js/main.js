@@ -16,7 +16,7 @@ var questionList = [
 var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
 });
-
+var response;
 /**
  * Generates the data for a question to be displayed
  * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
@@ -34,28 +34,28 @@ function questionLoad() {
             var value2 = getMetric(companyPair[1].symbol, questionList[num].metric);
             var logo1 = getLogo(companyPair[0].symbol);
             var logo2 = getLogo(companyPair[1].symbol);
+
+            // Create question option objects
+            var option1 = {
+                symbol: companyPair[0].symbol,
+                name: companyPair[0].name,
+                value: value1,
+                logo: logo1
+            };
+            var option2 = {
+                symbol: companyPair[1].symbol,
+                name: companyPair[1].name,
+                value: value2,
+                logo: logo2
+            };
+
+            // Create question object
+            var question = {question: questionList[num].text, answer: (value1>value2), option1: option1, option2: option2};
         } catch (err) {
             // An api call failed, restart generation process
             console.log(err.message);
             isValid = false;
         }
-
-        // Create question option objects
-        var option1 = {
-            symbol: companyPair[0].symbol,
-            name: companyPair[0].name,
-            value: value1,
-            logo: logo1
-        };
-        var option2 = {
-            symbol: companyPair[1].symbol,
-            name: companyPair[1].name,
-            value: value2,
-            logo: logo2
-        };
-
-        // Create question object
-        var question = {question: questionList[num].text, answer: (value1>value2), option1: option1, option2: option2};
     }
     return question;
 }
@@ -81,6 +81,9 @@ function getRandomCompanyPair() {
  */
 function getMetric(symbol, metric) {
 
+    fuck();
+
+    console.log(response);
 }
 
 /**
@@ -90,4 +93,20 @@ function getMetric(symbol, metric) {
  */
 function getLogo(symbol) {
 
+}
+
+function fuck(){
+    var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
+    var APIURL = "http://www.xignite.com/xLogos.json/GetLogo?IdentifierType=Symbol&Identifier=ATVI&_callback=getLogoReturn";
+    var finalURL = APIURL + "&Username=" + token;
+    $.ajax({
+    url:finalURL,
+    dataType: 'jsonp',
+    jsonp : false,
+    jsonpCallback: 'jsonCallback'
+    })
+}
+
+function getMetricReturn(data) {
+    response = data;
 }
