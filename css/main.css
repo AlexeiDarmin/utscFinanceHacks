@@ -95,16 +95,101 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+body{
+  background:#602A9C;
+  color:white;
+  padding-top:0px;
+}
+
+.appName{
+  font-family: 'Lobster', cursive;
+  font-weight:normal;
+  font-size:34px;
+  width:100%;
+  display:block;
+  background:black;
+  margin:0px;
+  text-align:center;
+  padding:10px;
+}
+
+.content-grid{
+  background:none;
+  max-width:780px;
+  margin:auto;
+  text-align:center;
+  margin-top:15px;
+}
+
+h1{
+  text-align:center;
+}
+
+h3{
+  width:100%;
+}
+
+.question{
+  font-family: 'Roboto', sans-serif;
+  color:black;
+  min-height:auto;
+  font-size:32px;
+  padding:15px;
+}
+
+.mdl-grid {
+  padding: 0;
+}
+
+.card-square.mdl-card {
+  padding:0;
+}
+.card-square > .mdl-card__title {
+  color: #fff;
+  background: url(https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg);
+  background-color:white;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  padding:15px;
+  background-origin: content-box;
+}
+
+.nextQuestion{
+  padding:10px 20px;
+  font-size:24px;
+  height:auto;
+  font-weight:normal;
+  background-color:#F2FFA8;;
+  margin:auto;
+  margin-top:25px;
+}
+
+
+/* 
+wide:
+https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg
+
+square:
+https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg
+*/
 
 
 
+@media screen and (max-width: 800px) {
+  .question{
+    font-size:24px;
+     padding:10px;
+  }
+}
 
 
-
-
-
-
-
+@media screen and (max-width: 540px) {
+  .question{
+    font-size:18px;
+     padding:5px;
+  }
+}
 
 
 
