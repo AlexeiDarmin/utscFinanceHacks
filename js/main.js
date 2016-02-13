@@ -22,16 +22,42 @@ var sap500 = $.getJSON("static/constituents.json", function(json) {
  * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
  */
 function questionLoad() {
-    /*http://factsetfundamentals.xignite.com/xFactSetFundamentals.xml/GetFundamentalsDailyRange?IdentifierType=Symbol&Identifiers=MSFT,GOOG&FundamentalTypes=MarketCapitalization,SharesOutstanding,PERatio&StartDate=2/12/2015&EndDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=*/
     var isValid = false;
-    while (isValid) {
+    while (!isValid) {
+        isValid = true;
         var num = Math.floor(Math.random() * questionList.length);
-        
-        var option1 = {symbol: "", name: "", value: "", logo: getLogo("")};
-        var option2 = {symbol: "", name: "", value: "", logo: getLogo("")};
-        var question = {question: "", answer: "", o1: question1, o2: question2};
-        return question;
+
+        // Make api calls and get data for question generation
+        try {
+            var companyPair = getRandomCompanyPair();
+            var value1 = getMetric(companyPair[0].symbol, questionList[num].metric);
+            var value2 = getMetric(companyPair[1].symbol, questionList[num].metric);
+            var logo1 = getLogo(companyPair[0].symbol);
+            var logo2 = getLogo(companyPair[1].symbol);
+        } catch (err) {
+            // An api call failed, restart generation process
+            console.log(err.message);
+            isValid = false;
+        }
+
+        // Create question option objects
+        var option1 = {
+            symbol: companyPair[0].symbol,
+            name: companyPair[0].name,
+            value: value1,
+            logo: logo1
+        };
+        var option2 = {
+            symbol: companyPair[1].symbol,
+            name: companyPair[1].name,
+            value: value2,
+            logo: logo2
+        };
+
+        // Create question object
+        var question = {question: questionList[num].text, answer: (value1>value2), option1: option1, option2: option2};
     }
+    return question;
 }
 
 /**
@@ -45,6 +71,7 @@ function getRandomCompanyPair() {
     var fsap500 = sap500.responseJSON.filter(function(value) { return value.Sector == sector1});
     num = Math.floor(Math.random() * fsap500.length);
     var company2 = fsap500[num];
+    if (company1.symbol == company2.symbol) { throw "same company"; }
     return [company1, company2];
 }
 
