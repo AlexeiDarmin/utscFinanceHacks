@@ -1,0 +1,93 @@
+
+var questionList = [
+    {metric: "MarketCapitalization", text: "Which has more market capital?"},
+    {metric: "SalesOrRevenue", text: "Which has more revenue?"},
+    {metric: "NumberOfEmployees", text: "Which has more employees?"},
+    {metric: "OperatingMargin", text: "Which has a higher operating margin?"},
+    {metric: "BookValue", text: "Which has a higher book value?"},
+    {metric: "PERatio", text: "Which has a higher PE Ratio?"},
+    {metric: "EarningsGrowth", text: "Which has more earnings growth?"},
+    {metric: "Beta", text: "Which has higher beta?"},
+    {metric: "TotalOperatingExpenses", text: "Which has more total operating expenses?"}
+];
+/*EBITDAMargin
+* DividendRate*/
+
+var sap500 = $.getJSON("static/constituents.json", function(json) {
+    return json;
+});
+
+/**
+ * Generates the data for a question to be displayed
+ * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
+ */
+function questionLoad() {
+    var isValid = false;
+    while (!isValid) {
+        isValid = true;
+        var num = Math.floor(Math.random() * questionList.length);
+
+        // Make api calls and get data for question generation
+        try {
+            var companyPair = getRandomCompanyPair();
+            var value1 = getMetric(companyPair[0].symbol, questionList[num].metric);
+            var value2 = getMetric(companyPair[1].symbol, questionList[num].metric);
+            var logo1 = getLogo(companyPair[0].symbol);
+            var logo2 = getLogo(companyPair[1].symbol);
+        } catch (err) {
+            // An api call failed, restart generation process
+            console.log(err.message);
+            isValid = false;
+        }
+
+        // Create question option objects
+        var option1 = {
+            symbol: companyPair[0].symbol,
+            name: companyPair[0].name,
+            value: value1,
+            logo: logo1
+        };
+        var option2 = {
+            symbol: companyPair[1].symbol,
+            name: companyPair[1].name,
+            value: value2,
+            logo: logo2
+        };
+
+        // Create question object
+        var question = {question: questionList[num].text, answer: (value1>value2), option1: option1, option2: option2};
+    }
+    return question;
+}
+
+/**
+ * Returns two random companies from the same industry
+ * @return list containing 2 Company Objects {symbol, name, sector)
+ */
+function getRandomCompanyPair() {
+    var num = Math.floor(Math.random() * 494);
+    var company1 = sap500.responseJSON[num];
+    var sector1 = company1.Sector;
+    var fsap500 = sap500.responseJSON.filter(function(value) { return value.Sector == sector1});
+    num = Math.floor(Math.random() * fsap500.length);
+    var company2 = fsap500[num];
+    if (company1.symbol == company2.symbol) { throw "same company"; }
+    return [company1, company2];
+}
+
+/**
+ * Return the value of the specified metric and company symbol
+ * @return list containing 2 Name Objects (Option1 Name, Option2 Name, Answer, Option1 Logo Url,
+ */
+function getMetric(symbol, metric) {
+
+}
+
+/**
+ * Return the url of a companies logo given the symbol of the company
+ * @param symbol of company
+ * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
+ */
+function getLogo(symbol) {
+
+}
