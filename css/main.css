@@ -166,14 +166,19 @@ h3 h5{
     display: none;
 }
 
+
+
 .correct {
     background-color: #75ff7e;
 }
 
 .incorrect {
-    background-color: #ff433d;
+    background-color: rgba(255, 67, 61, 0.73);
 }
 
+.mdl-card__supporting-text {
+    width: 100%;
+}
 /* 
 wide:
 https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg

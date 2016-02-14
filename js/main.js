@@ -13,33 +13,49 @@ var questionList = [
 /*EBITDAMargin
 * DividendRate*/
 
+var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
+
 var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
 });
 
 var response;
 
+
+function demoLoad() {
+    var nextQ = demoList[0];
+    demoList.shift();
+    demoList.push(nextQ);
+    return nextQ;
+}
+
 /**
  * Manipulates the dom to show a new question
  */
 function renderQuestion() {
-    var q = questionLoad();
+    var q = demoLoad();
+    //var q = questionLoad();
+
     $(".question").text(q.question);
 
     var comps = $('.card-square');
 
     // Update titles, images and correct values for the new question
-    comps[0].find("a").text(q.option1.name);
-    comps[0].attr('isCorrect', String(q.answer));
-    comps[0].child(1).css("background-image", "url("+q.option1.logo+")");
+    $(comps[0]).find("a").text(q.option1.name);
+    $(comps[0]).attr('isCorrect', String(q.answer));
+    $(comps[0]).children().eq(0).css("background-image", "url("+q.option1.logo+")");
+    $(comps[0]).children().eq(1).addClass("invisible");
+    $(comps[0]).children().eq(1).text(q.option1.value);
+    $(comps[0]).children().eq(1).removeClass("correct");
+    $(comps[0]).children().eq(1).removeClass("incorrect");
 
-    comps[1].find("a").text(q.option2.name);
-    comps[1].attr('isCorrect', String(!q.answer));
-    comps[1].child(1).css("background-image", "url("+q.option2.logo+")");
-
-    // Bind click actions to the two options
-    comps.unbind('click');
-    comps.click(processAnswer());
+    $(comps[1]).find("a").text(q.option2.name);
+    $(comps[1]).attr('isCorrect', String(!q.answer));
+    $(comps[1]).children().eq(0).css("background-image", "url("+q.option2.logo+")");
+    $(comps[1]).children().eq(1).addClass("invisible");
+    $(comps[1]).children().eq(1).text(q.option2.value);
+    $(comps[1]).children().eq(1).removeClass("correct");
+    $(comps[1]).children().eq(1).removeClass("incorrect");
 
     $("button").addClass("hide");
 }
@@ -48,7 +64,26 @@ function renderQuestion() {
  * Manipulates the dom to react to one of the options being selected
  * correct or incorrect
  */
-function processAnswer() {
+function processAnswer(sel) {
+    var comps = $('.card-square');
+
+    //comps.unbind('click');
+    //comps.on('click',processAnswer());
+
+    $(comps[0]).children().eq(1).removeClass("invisible");
+    $(comps[1]).children().eq(1).removeClass("invisible");
+
+    if ($(comps[0]).attr("isCorrect") == 'true' && $(comps[0]).id == sel) {
+        if ($(comps[0]).attr('id') == sel) {
+            $(comps[0]).children().eq(1).addClass("correct");
+        } else {
+            $(comps[1]).children().eq(1).addClass("incorrect");
+        }
+    } else if ($(comps[1]).attr('id') == sel) {
+        $(comps[1]).children().eq(1).addClass("correct");
+    } else {
+        $(comps[0]).children().eq(1).addClass("incorrect");
+    }
 
     $("button").removeClass("hide");
 }
@@ -95,6 +130,137 @@ function questionLoad() {
     }
     return question;
 }
+
+var demoList = [
+    {
+        question: "Which firm has a larger 'Market Capitalization'?",
+        answer: false,
+        option1:{
+            symbol: "AMZN",
+            name: "Amazon Inc.",
+            value: "$245.25 Billion",
+            logo: "https://logo.clearbit.com/amazon.com"
+        },
+        option2:{
+            symbol: "MSFT",
+            name: "Microsoft Corp.",
+            value: "$399.26 Billion",
+            logo: "https://logo.clearbit.com/microsoft.com"
+        }
+    },
+    {
+        question: "Which firm has a larger 'Market Capitalization'?",
+        answer: true,
+        option1: {
+            symbol: "AMZN",
+            name: "Amazon.com, Inc.",
+            value: "$240.30 Billion",
+            logo: "https://logo.clearbit.com/amazon.com"
+        },
+        option2: {
+            symbol: "EBAY",
+            name: "eBay Inc",
+            value: "$27.00 Billion",
+            logo: "https://logo.clearbit.com/ebay.ca"
+        }
+    },
+    {
+        question: "Which company holds a higher 'Beta' value?",
+        answer: true,
+        option1:{
+            symbol: "T",
+            name: "AT&T Inc.",
+            value: "0.30",
+            logo: "https://logo.clearbit.com/att.com"
+        },
+        option2:{
+            symbol: "VZ",
+            name: "Verizon Communications Inc.",
+            value: "0.22",
+            logo: "https://logo.clearbit.com/verizon.com"
+        }
+    },
+    {
+        question: "Which company has a higher 'Earnings Per Share' (EPS) value for 2015?",
+        answer: false,
+        option1:{
+            symbol: "YHOO",
+            name: "Yahoo! Inc.",
+            value: "-4.62",
+            logo: "https://logo.clearbit.com/yahoo.com"
+        },
+        option2:{
+            symbol: "MSFT",
+            name: "Microsoft Corp.",
+            value: "1.40",
+            logo: "https://logo.clearbit.com/microsoft.com"
+        }
+    },
+    {
+        question: "Which firm has a more favourable 'Price To Earnings' (P/E) ratio?",
+        answer: false,
+        option1:{
+            symbol: "V",
+            name: "Visa Inc",
+            value: "27.00",
+            logo: "https://logo.clearbit.com/visa.com"
+        },
+        option2:{
+            symbol: "MA",
+            name: "Mastercard Inc",
+            value: "25.37",
+            logo: "https://logo.clearbit.com/mastercard.com"
+        }
+    },
+    {
+        question: "Which stock would be a more favourable choice in terms of 'Institutional Ownership'?",
+        answer: true,
+        option1:{
+            symbol: "CBS",
+            name: "CBS Corporation",
+            value: "89%",
+            logo: "https://logo.clearbit.com/cbs.com"
+        },
+        option2:{
+            symbol: "TWX",
+            name: "Time Warner Inc",
+            value: "85%",
+            logo: "https://logo.clearbit.com/timewarnercable.com"
+        }
+    },
+    {
+        question: "Which firm has a higher 'Dividend Yield Ratio'?",
+        answer: true,
+        option1:{
+            symbol: "STX",
+            name: "Seagate Technology PLC",
+            value: "8.68%",
+            logo: "https://logo.clearbit.com/seagate.com"
+        },
+        option2:{
+            symbol: "SNDK",
+            name: "SanDisk Corp.",
+            value: "1.78%",
+            logo: "https://logo.clearbit.com/sandisk.com"
+        }
+    },
+    {
+        question: "Which firm has a higher 'Cash Flow per Share' value?",
+        answer: false,
+        option1:{
+            symbol: "EXPE",
+            name: "Expedia Inc",
+            value: "$4.81/share",
+            logo: "https://logo.clearbit.com/expedia.com"
+        },
+        option2:{
+            symbol: "PCLN",
+            name: "Priceline Group Inc",
+            value: "$54.14/share",
+            logo: "https://logo.clearbit.com/priceline.com"
+        }
+    }
+];
 
 /**
  * Returns two random companies from the same industry
@@ -157,7 +323,6 @@ function getLogo(symbol) {
 
 
 function fuck(){
-    var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
     var APIURL = "http://www.xignite.com/xLogos.json/GetLogo?IdentifierType=Symbol&Identifier=ATVI&_callback=getMetricReturn";
     var finalURL = APIURL + "&Username=" + token;
 

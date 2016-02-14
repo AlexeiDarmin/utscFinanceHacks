@@ -26,33 +26,35 @@
 
         <!-- Add your site or application content here -->
         
-        <h3 class="appName">Stock VS</h3>
+        <h3 class="appName">Stock v Stock</h3>
 
         <div class="content-grid mdl-grid">
-            <div class="card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--2-col-phone mdl-cell--4-col-tablet mdl-cell--6-col">
+            <div id="op1" onclick="processAnswer(this.id)" class="card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--2-col-phone mdl-cell--4-col-tablet mdl-cell--6-col">
               <div class="mdl-card__title mdl-card--expand"></div>
-              <div class="mdl-card__supporting-text">
-                $46.55 Billion
+              <div class="invisible correct mdl-card__supporting-text">
+                <!--$46.55 Billion-->
               </div>
               <div class="mdl-card__actions mdl-card--border">
                 <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-                  Company Name
+                  <!--Company Name-->
                 </a>
               </div>
             </div>
-            <div class="card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--2-col-phone mdl-cell--4-col-tablet mdl-cell--6-col">
+            <div id="op2" onclick="processAnswer(this.id)" class="card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--2-col-phone mdl-cell--4-col-tablet mdl-cell--6-col">
               <div class="mdl-card__title mdl-card--expand"></div>
-              <div class="mdl-card__supporting-text">
-                $50.10 Billion
+              <div class="invisible incorrect mdl-card__supporting-text">
+                <!--$50.10 Billion-->
               </div>
               <div class="mdl-card__actions mdl-card--border">
                 <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-                  Company Name
+                  <!--Company Name-->
                 </a>
               </div>
             </div>
 
-            <h5 class="question mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col">Which has more market capital?</h5>
+            <h5 class="question mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col">
+                <!--Which has more market capital?-->
+            </h5>
 
             <!-- Raised button with ripple -->
             <button onclick="renderQuestion()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect nextQuestion">
