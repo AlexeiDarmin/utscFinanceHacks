@@ -99,6 +99,7 @@ body{
   background:#602A9C;
   color:white;
   padding-top:0px;
+  overflow-x:hidden;
 }
 
 .appName{
@@ -135,10 +136,6 @@ h3{
   min-height:auto;
   font-size:32px;
   padding:15px;
-}
-
-.mdl-grid {
-  padding: 0;
 }
 
 .card-square.mdl-card {
