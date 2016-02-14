@@ -65,7 +65,7 @@ var sap500 = $.getJSON("static/constituents.json", function(json) {
 var response;
 var errorCount = 0;
 
-window.onload = renderQuestion;
+window.onload = questionLoad;
 
 function demoLoad() {
     var nextQ = demoList[0];
@@ -80,7 +80,7 @@ function demoLoad() {
 function renderQuestion() {
     // var q = demoLoad();
     var q = question;
-
+    console.log(q);
     $(".question").text(q.question);
 
     var comps = $('.card-square');
@@ -175,10 +175,18 @@ function checkCallBack() {
         question.option2 = option2;
         renderQuestion();
     } else {
+        wait(200);
         check();
     }
 }
 
+function wait(ms){
+   var start = new Date().getTime();
+   var end = start;
+   while(end < start + ms) {
+     end = new Date().getTime();
+  }
+}
 /**
  * Returns two random companies from the same industry
  * @return list containing 2 Company Objects {symbol, name, sector)
@@ -232,19 +240,21 @@ function caller1(data) {
     // }
 
     var symbol = data[0].Company.Symbol;
-
+    console.log(symbol);
     if (option1.symbol == symbol) {
         option1.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
         option1.name = data[0].Company.Name;
     } else if (option2.symbol == symbol) {
         option2.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
         option2.name = data[0].Company.Name;
-    } else if (!option1.symbol) {
+    } else if (option1.symbol == "") {
         option1.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+        option1.symbol = symbol;
         option1.name = data[0].Company.Name;
     } else {
         option2.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
-        option1.name = data[0].Company.Name;
+        option2.name = data[0].Company.Name;
+        option2.symbol = symbol; 
     }
 }
 
@@ -255,12 +265,12 @@ function caller1(data) {
  */
 function getLogo(symbol) {
     var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=Website&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token=" + token; //+ "&_callback=caller2";
-    console.log(APIURL);
+    // console.log(APIURL);
     $.getJSON(APIURL, caller2);
 }
 
 function caller2(data) {
-    console.log(data);
+    // console.log(data);
     var result = data[0].FundamentalsSets[0].Fundamentals[0].Value; 
     var start = result.indexOf(".");
     var domain = result.substring(start + 1, result.length);
@@ -271,10 +281,12 @@ function caller2(data) {
         option1.logo = logo_url;
     } else if (option2.symbol == symbol) {
         option2.logo = logo_url;
-    } else if (!option1.symbol) {
+    } else if (option1.symbol == "") {
         option1.logo = logo_url;
+        option1.symbol = symbol;
     } else {
-        option2.logo = logo_url
+        option2.logo = logo_url;
+        option2.symbol = symbol;
     }
 
     console.log(option1, option2);
