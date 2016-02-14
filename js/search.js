@@ -75,7 +75,7 @@ for (i = 0; i < final.length; i++){
 	}
 }
 
-console.log(firsts);
+// console.log(firsts);
 
 function matchPercent(phrase){
 	if (phrase == "") {
@@ -132,11 +132,7 @@ function matchPercent(phrase){
 	}
 	return suggestion;
 }
-// http://codepen.io/nikhil/pen/qcyGF
-function searchFunc(){
-	$('#autofill').addClass('hidden');
-	alert('hello world');
-}
+
 
   $(document).ready(function(){
             var submitIcon = $('.searchbox-icon');
