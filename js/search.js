@@ -62,32 +62,120 @@ nas = "";
 tsx = "";
 nys = "";
 
+final.sort();
 
+// Build dictionary indexing the starting position of each letter
+var firsts = {"0": 0};
+var previousLetter = "0";
+
+for (i = 0; i < final.length; i++){
+	if (final[i][0].toLowerCase() > previousLetter){
+		firsts[final[i][0].toLowerCase()] = i;
+		previousLetter = final[i][0].toLowerCase();
+	}
+}
+
+console.log(firsts);
 
 function matchPercent(phrase){
+	if (phrase == "") {
+		$('#autofill').addClass('hidden');
+	} else {
+		if ($('#autofill').hasClass('hidden')){
+			$('#autofill').removeClass('hidden');
+		}
+	}
 	var Plength = phrase.length;
 	var bestRatio = 0;
-	var bestStart = 10000;
 	var suggestion = "";
-	var ind = 100000;
-	for (i = 0; i < final.length; i++){
-		ind = final[i].toLowerCase().indexOf(phrase.toLowerCase());
-		if(ind < bestStart && ind != -1)
+	var ind;
+	var firstChar = phrase[0].toLowerCase();
+	var i = firsts[firstChar];
+	console.log(final[i][0].toLowerCase(), firstChar);
+	while (final[i][0].toLowerCase() == firstChar){
+		//console.log(i);
+		if (final[i].toLowerCase().indexOf(phrase.toLowerCase()) > -1)
 		{
-			bestStart = ind;
-			bestRatio = Plength/final[i].length;
-			suggestion = final[i];
-		} 
-		else if (ind == bestStart && ind > -1)
-		{
-			console.log(ind);
-			if (Plength/final[i].length > bestRatio){
-				bestRatio = Plength/final[i].length;
-				suggestion = final[i];
+			if (Plength > 1 ){
+				if (phrase.toLowerCase()[1] == final[i][1].toLowerCase()){
+					if (Plength > 2 ){
+						if (phrase.toLowerCase()[2] == final[i][2].toLowerCase()){
+						//console.log(ind);
+							if (Plength/final[i].length > bestRatio){
+								bestRatio = Plength/final[i].length;
+								suggestion = final[i];
+							}
+						}
+					} else {
+						if (Plength/final[i].length > bestRatio){
+							bestRatio = Plength/final[i].length;
+							suggestion = final[i];
+						}
+					}
+				}
+			} else {
+				if (Plength/final[i].length > bestRatio){
+					bestRatio = Plength/final[i].length;
+					suggestion = final[i];
+				}
 			}
 		}
+		i += 1;
+	}
+	if (suggestion == "") {
+		$('#autofill').addClass('hidden');
+	} else {
+		if ($('#autofill').hasClass('hidden')){
+			$('#autofill').removeClass('hidden');
+		}
+		$('#autofill').val(suggestion);
 	}
 	return suggestion;
 }
+// http://codepen.io/nikhil/pen/qcyGF
+function searchFunc(){
+	$('#autofill').addClass('hidden');
+	alert('hello world');
+}
 
-console.log(matchPercent("lent"));
+  $(document).ready(function(){
+            var submitIcon = $('.searchbox-icon');
+            var inputBox = $('.searchbox-input');
+            var searchBox = $('.searchbox');
+            var isOpen = false;
+            submitIcon.click(function(){
+                if(isOpen == false){
+                    searchBox.addClass('searchbox-open');
+                    inputBox.focus();
+                    isOpen = true;
+                } else {
+                    searchBox.removeClass('searchbox-open');
+                    inputBox.focusout();
+                    isOpen = false;
+                }
+            });  
+             submitIcon.mouseup(function(){
+                    return false;
+                });
+            searchBox.mouseup(function(){
+                    return false;
+                });
+
+            $(document).mouseup(function(){
+                    if(isOpen == true){
+                        $('.searchbox-icon').css('display','block');
+                        submitIcon.click();
+                    }
+                });
+        });
+            function buttonUp(){
+                var inputVal = $('.searchbox-input').val();
+                console.log(matchPercent(inputVal));
+                inputVal = $.trim(inputVal).length;
+                if( inputVal !== 0){
+                   //$( '.searchbox-icon').css('display','none');
+                } else {
+                    $('.searchbox-input').val('');
+                    $('.searchbox-icon').css('display','block');
+                }
+            }

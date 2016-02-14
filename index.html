@@ -25,8 +25,20 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        
-        <h3 class="appName">Stock V Stock</h3>
+        <div class="nav">
+            <div class="maxWidth">
+                <h3 class="appName">Stock V Stock</h3>
+                <div class="container">
+                    <form class="searchbox">
+                        <input type="search" placeholder="Search..." name="search" class="searchbox-input" onkeyup="buttonUp();" required autocomplete="off">
+
+                        <input type="submit" class="searchbox-submit" value="GO">
+                        <span class="searchbox-icon"><img src="img/magnify.png"></span>
+                    </form>
+                    <input id="autofill" autocomplete="off" class="hidden" onfocus="searchFunc()">
+                </div>
+            </div>
+        </div>
 
         <div class="content-grid mdl-grid">
             <div id="op1" onclick="processAnswer(this.id)" class="card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--2-col-phone mdl-cell--4-col-tablet mdl-cell--6-col">
@@ -69,6 +81,7 @@
         <script src="mdl/material.min.js"></script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/search.js"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
