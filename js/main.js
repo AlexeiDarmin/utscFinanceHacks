@@ -120,10 +120,27 @@ function getRandomCompanyPair() {
  * Return the value of the specified metric and company symbol
  * @return list containing 2 Name Objects (Option1 Name, Option2 Name, Answer, Option1 Logo Url,
  */
-function getMetric(symbol, metric) {
+function getAllMetrics(symbol) {
+    var metrics = "";
+    for (var i = 0; i < questionList.length; i++) {
+        if (i == questionList.length - 1) {
+            metrics += questionList[i].metric
+        } else {
+            metrics += questionList[i].metric + ",";
+        }
+    }   
+    
+    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=" + metrics + "&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
+    var out = [];
 
-    fuck();
-    console.log(response);
+    $.getJSON(APIURL, function(data) {
+        // console.log(data[0].FundamentalsSets[0].Fundamentals[0].Value);
+        for (var i = 0; i < questionList.length; i++) {
+            out.push(data[0].FundamentalsSets[0].Fundamentals[i].Value);
+        }
+        console.log(out);
+        return out; 
+    });
 }
 
 /**
@@ -132,8 +149,17 @@ function getMetric(symbol, metric) {
  * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
  */
 function getLogo(symbol) {
-
+    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=Website&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
+    $.getJSON(APIURL, function(data) {
+        var result = data[0].FundamentalsSets[0].Fundamentals[0].Value; 
+        var start = result.indexOf(".");
+        var domain = result.substring(start + 1,result.length);
+        var logo_url = "https://logo.clearbit.com/" + domain;
+        console.log(logo_url);
+        return logo_url;
+    });
 }
+
 
 function fuck(){
     var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
