@@ -53,6 +53,7 @@ function renderQuestion() {
     $(comps[0]).children().eq(1).text(q.option1.value);
     $(comps[0]).children().eq(1).removeClass("correct");
     $(comps[0]).children().eq(1).removeClass("incorrect");
+    $(comps[0]).attr('onclick', 'processAnswer(this.id)');
 
     $(comps[1]).find("a").text(q.option2.name);
     $(comps[1]).attr('isCorrect', String(!q.answer));
@@ -61,6 +62,7 @@ function renderQuestion() {
     $(comps[1]).children().eq(1).text(q.option2.value);
     $(comps[1]).children().eq(1).removeClass("correct");
     $(comps[1]).children().eq(1).removeClass("incorrect");
+    $(comps[1]).attr('onclick', 'processAnswer(this.id)');
 
     $("button").addClass("hide");
 }
@@ -72,11 +74,11 @@ function renderQuestion() {
 function processAnswer(sel) {
     var comps = $('.card-square');
 
-    //comps.unbind('click');
-    //comps.on('click',processAnswer());
-
     $(comps[0]).children().eq(1).removeClass("invisible");
+    $(comps[0]).removeAttr('onclick');
+
     $(comps[1]).children().eq(1).removeClass("invisible");
+    $(comps[1]).removeAttr('onclick');
 
     if ($(comps[0]).attr("isCorrect") == 'true') {
         if ($(comps[0]).attr('id') == sel) {
