@@ -14,10 +14,49 @@ var questionList = [
 /**
  * GLOBALS
  */
+
+/* var question = {question: questionList[num].text, 
+                    answer: (value1>value2), 
+                    option1: option1, 
+                    option2: option2};
+*/
+
+var question = {};
+
+// Create question option objects
+// var option1 = {
+//     symbol: companyPair[0].Symbol,
+//     name: companyPair[0].Name,
+//     value: value1,
+//     logo: logo1
+// };
+
+// var option2 = {
+//     symbol: companyPair[1].Symbol,
+//     name: companyPair[1].Name,
+//     value: value2,
+//     logo: logo2
+// };
+var option1 = {
+    symbol: "",
+    name: "",
+    value: "",
+    logo: ""
+};
+
+var option2 = {
+    symbol: "",
+    name: "",
+    value: "",
+    logo: ""
+};
+
 // used in getLogo
 var logo_url = "";
+
 // used in getAllMetrics
-var metric_output = [];
+// var metric_output = "";
+
 var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
 var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
@@ -98,44 +137,43 @@ function processAnswer(sel) {
  * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
  */
 function questionLoad() {
-    var isValid = false;
-    while (!isValid && errorCount < 5) {
-        isValid = true;
-        var num = Math.floor(Math.random() * questionList.length);
 
-        // Make api calls and get data for question generation
-        try {
-            var companyPair = getRandomCompanyPair();
-            var value1 = getAllMetrics(companyPair[0].Symbol);
-            var value2 = getAllMetrics(companyPair[1].Symbol);
-            //, questionList[num].metric
-            var logo1 = getLogo(companyPair[0].Symbol);
-            var logo2 = getLogo(companyPair[1].Symbol);
+    var num = Math.floor(Math.random() * questionList.length);
+    question.question = questionList[num].text;
+    question.metric = questionList[num].metric;
 
-            // Create question option objects
-            var option1 = {
-                symbol: companyPair[0].Symbol,
-                name: companyPair[0].name,
-                value: value1,
-                logo: logo1
-            };
-            var option2 = {
-                symbol: companyPair[1].Symbol,
-                name: companyPair[1].name,
-                value: value2,
-                logo: logo2
-            };
+    // Make api calls and get data for question generation
+    var companyPair = getRandomCompanyPair();
+    console.log(companyPair);
+        
+    // value 1
+    getMetric(companyPair[0].Symbol);
 
-            // Create question object
-            var question = {question: questionList[num].text, answer: (value1>value2), option1: option1, option2: option2};
-        } catch (err) {
-            // An api call failed, restart generation process
-            console.log(err.message);
-            isValid = false;
-            errorCount += 1;
-        }
+    // value 2
+    getMetric(companyPair[1].Symbol);
+
+    // logo 1
+    getLogo(companyPair[0].Symbol);
+
+    // logo 2
+    getLogo(companyPair[1].Symbol);
+
+    check();  
+
+    // return question;
+}
+
+function check() {
+    $.get("", checkCallback);
+
+}
+
+function checkCallBack() {
+    if (option1.value && option2.value) {
+        question.answer = option1.value > option2.value;
+    } else {
+        check();
     }
-    return question;
 }
 
 /**
@@ -157,21 +195,49 @@ function getRandomCompanyPair() {
  * Return the value of the specified metric and company symbol
  * @return a list with all fundamentals for a given symbol
  */
-function getAllMetrics(symbol) {
-    // flush out the current contents, if any
-    metric_output = [];
-    var metrics = "CompanyName,Website,";
-    for (var i = 0; i < questionList.length; i++) {
-        if (i == questionList.length - 1) { metrics += questionList[i].metric }
-        else { metrics += questionList[i].metric + ","; }
-    }
-    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=" + metrics + "&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
-    $.getJSON(APIURL, function(data) {
+function getMetric(symbol) {
+     
+    // var metrics = "CompanyName,Website,";
+    // for (var i = 0; i < questionList.length; i++) {
+    //     if (i == questionList.length - 1) { metrics += questionList[i].metric }
+    //     else { metrics += questionList[i].metric + ","; }
+    // }
+    // console.log(question.metric);
+
+    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=" + question.metric + "&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token=" + token;
+    console.log(APIURL);
+    $.getJSON(APIURL, caller1); /*{
         for (var i = 0; i < questionList.length; i++) { 
-            metric_output.push(data[0].FundamentalsSets[0].Fundamentals[i].Value); 
+            // metric_output += data[0].FundamentalsSets[0].Fundamentals[i].Value + "%%";
+            metric_output += data[0].FundamentalsSets[0].Fundamentals[i].Value + "%%";
+            // console.log(metric_output); 
         }
     });
-    return metric_output;
+    console.log(metric_output);
+    /* } else {
+        // console.log("2");
+        metric_output = [];
+    }*/
+}
+
+function caller1(data) {
+    // console.log(data);
+    // var metric_output = ;
+    // for (var i = 0; i < questionList.length; i++) { 
+        // metric_output += data[0].FundamentalsSets[0].Fundamentals[i].Value + "%%";
+        // metric_output += data[0].FundamentalsSets[0].Fundamentals[i].Value + "%%"; 
+    // }
+
+    var symbol = data[0].Company.Symbol;
+    if (option1.symbol == symbol) {
+        option1.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+    } else if (option2.symbol == symbol) {
+        option2.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+    } else if (!option1.symbol) {
+        option1.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+    } else {
+        option2.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+    }
 }
 
 /**
@@ -180,14 +246,31 @@ function getAllMetrics(symbol) {
  * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
  */
 function getLogo(symbol) {
-    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=Website&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
-    $.getJSON(APIURL, function(data) {
-        var result = data[0].FundamentalsSets[0].Fundamentals[0].Value; 
-        var start = result.indexOf(".");
-        var domain = result.substring(start + 1, result.length);
-        logo_url = "https://logo.clearbit.com/" + domain;
-    });
-    return logo_url;
+    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=Website&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token=" + token; //+ "&_callback=caller2";
+    console.log(APIURL);
+    $.getJSON(APIURL, caller2);
+}
+
+function caller2(data) {
+    console.log(data);
+    var result = data[0].FundamentalsSets[0].Fundamentals[0].Value; 
+    var start = result.indexOf(".");
+    var domain = result.substring(start + 1, result.length);
+    logo_url = "https://logo.clearbit.com/" + domain;
+
+    var symbol = data[0].Company.Symbol;
+    if (option1.symbol == symbol) {
+        option1.logo = logo_url;
+    } else if (option2.symbol == symbol) {
+        option2.logo = logo_url;
+    } else if (!option1.symbol) {
+        option1.logo = logo_url;
+    } else {
+        option2.logo = logo_url
+    }
+
+    console.log(option1, option2);
+    // return data;
 }
 
 function fuck(){
