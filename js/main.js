@@ -12,6 +12,11 @@ var questionList = [
 ];
 /*EBITDAMargin
 * DividendRate*/
+var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
+// used in getLogo
+var logo_url = "";
+// used in getAllMetrics
+var metric_output = [];
 
 var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
@@ -20,6 +25,7 @@ var sap500 = $.getJSON("static/constituents.json", function(json) {
 jQuery.ajaxSetup({async:false});
 
 var response;
+var errorCount = 0;
 
 $("button").click(renderQuestion());
 
@@ -64,7 +70,7 @@ function processAnswer() {
  */
 function questionLoad() {
     var isValid = false;
-    while (!isValid) {
+    while (!isValid && errorCount < 5) {
         isValid = true;
         var num = Math.floor(Math.random() * questionList.length);
 
@@ -96,6 +102,7 @@ function questionLoad() {
             // An api call failed, restart generation process
             console.log(err.message);
             isValid = false;
+            errorCount += 1;
         }
     }
     return question;
@@ -121,26 +128,20 @@ function getRandomCompanyPair() {
  * @return list containing 2 Name Objects (Option1 Name, Option2 Name, Answer, Option1 Logo Url,
  */
 function getAllMetrics(symbol) {
-    var metrics = "";
+    // flush out the current contents, if any
+    metric_output = [];
+    var metrics = "CompanyName,Website,";
     for (var i = 0; i < questionList.length; i++) {
-        if (i == questionList.length - 1) {
-            metrics += questionList[i].metric
-        } else {
-            metrics += questionList[i].metric + ",";
-        }
-    }   
-    
+        if (i == questionList.length - 1) { metrics += questionList[i].metric }
+        else { metrics += questionList[i].metric + ","; }
+    }
     var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=" + metrics + "&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
-    var out = [];
-
     $.getJSON(APIURL, function(data) {
-        // console.log(data[0].FundamentalsSets[0].Fundamentals[0].Value);
-        for (var i = 0; i < questionList.length; i++) {
-            out.push(data[0].FundamentalsSets[0].Fundamentals[i].Value);
+        for (var i = 0; i < questionList.length; i++) { 
+            metric_output.push(data[0].FundamentalsSets[0].Fundamentals[i].Value); 
         }
-        console.log(out);
-        return out; 
     });
+    return metric_output;
 }
 
 /**
@@ -153,16 +154,14 @@ function getLogo(symbol) {
     $.getJSON(APIURL, function(data) {
         var result = data[0].FundamentalsSets[0].Fundamentals[0].Value; 
         var start = result.indexOf(".");
-        var domain = result.substring(start + 1,result.length);
-        var logo_url = "https://logo.clearbit.com/" + domain;
-        console.log(logo_url);
-        return logo_url;
+        var domain = result.substring(start + 1, result.length);
+        logo_url = "https://logo.clearbit.com/" + domain;
     });
+    return logo_url;
 }
 
-
 function fuck(){
-    var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
+    
     var APIURL = "http://www.xignite.com/xLogos.json/GetLogo?IdentifierType=Symbol&Identifier=ATVI&_callback=getMetricReturn";
     var finalURL = APIURL + "&Username=" + token;
 
@@ -177,4 +176,5 @@ function fuck(){
 
 function getMetricReturn(data) {
     response = data;
+    // console.
 }
