@@ -126,13 +126,13 @@ h1{
   text-align:center;
 }
 
-h3{
+h3 h5{
   width:100%;
 }
 
 .question{
   font-family: 'Roboto', sans-serif;
-  color:black;
+  color: #252525;
   min-height:auto;
   font-size:32px;
   padding:15px;
@@ -157,12 +157,21 @@ h3{
   font-size:24px;
   height:auto;
   font-weight:normal;
-  background-color:#F2FFA8;;
+  background-color:#F2FFA8;
   margin:auto;
   margin-top:25px;
 }
+
 .hide {
     display: none;
+}
+
+.correct {
+    background-color: #75ff7e;
+}
+
+.incorrect {
+    background-color: #ff433d;
 }
 
 /* 

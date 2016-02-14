@@ -17,11 +17,7 @@ var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
 });
 
-jQuery.ajaxSetup({async:false});
-
 var response;
-
-$("button").click(renderQuestion());
 
 /**
  * Manipulates the dom to show a new question
@@ -53,7 +49,6 @@ function renderQuestion() {
  * correct or incorrect
  */
 function processAnswer() {
-    this.html
 
     $("button").removeClass("hide");
 }
