@@ -136,7 +136,7 @@ h3{
 
 .question{
   font-family: 'Roboto', sans-serif;
-  color:black;
+  color: #252525;
   min-height:auto;
   font-size:32px;
   padding:15px;
@@ -147,7 +147,6 @@ h3{
 }
 .card-square > .mdl-card__title {
   color: #fff;
-  background: url(https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg);
   background-color:white;
   background-size:contain;
   background-repeat:no-repeat;
@@ -161,14 +160,28 @@ h3{
   font-size:24px;
   height:auto;
   font-weight:normal;
-  background-color:#F2FFA8;;
+  background-color:#F2FFA8;
   margin:auto;
   margin-top:25px;
 }
+
 .hide {
     display: none;
 }
 
+
+
+.correct {
+    background-color: #75ff7e;
+}
+
+.incorrect {
+    background-color: rgba(255, 67, 61, 0.73);
+}
+
+.mdl-card__supporting-text {
+    width: 100%;
+}
 /* 
 wide:
 https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg

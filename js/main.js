@@ -10,46 +10,57 @@ var questionList = [
     {metric: "Beta", text: "Which has higher beta?"},
     {metric: "TotalOperatingExpenses", text: "Which has more total operating expenses?"}
 ];
-/*EBITDAMargin
-* DividendRate*/
-var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
+
+/**
+ * GLOBALS
+ */
 // used in getLogo
 var logo_url = "";
 // used in getAllMetrics
 var metric_output = [];
-
+var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
 var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
 });
-
-jQuery.ajaxSetup({async:false});
-
 var response;
 var errorCount = 0;
 
-$("button").click(renderQuestion());
+window.onload = renderQuestion;
+
+function demoLoad() {
+    var nextQ = demoList[0];
+    demoList.shift();
+    demoList.push(nextQ);
+    return nextQ;
+}
 
 /**
  * Manipulates the dom to show a new question
  */
 function renderQuestion() {
-    var q = questionLoad();
+    var q = demoLoad();
+    //var q = questionLoad();
+
     $(".question").text(q.question);
 
     var comps = $('.card-square');
 
     // Update titles, images and correct values for the new question
-    comps[0].find("a").text(q.option1.name);
-    comps[0].attr('isCorrect', String(q.answer));
-    comps[0].child(1).css("background-image", "url("+q.option1.logo+")");
+    $(comps[0]).find("a").text(q.option1.name);
+    $(comps[0]).attr('isCorrect', String(q.answer));
+    $(comps[0]).children().eq(0).css("background-image", "url("+q.option1.logo+")");
+    $(comps[0]).children().eq(1).addClass("invisible");
+    $(comps[0]).children().eq(1).text(q.option1.value);
+    $(comps[0]).children().eq(1).removeClass("correct");
+    $(comps[0]).children().eq(1).removeClass("incorrect");
 
-    comps[1].find("a").text(q.option2.name);
-    comps[1].attr('isCorrect', String(!q.answer));
-    comps[1].child(1).css("background-image", "url("+q.option2.logo+")");
-
-    // Bind click actions to the two options
-    comps.unbind('click');
-    comps.click(processAnswer());
+    $(comps[1]).find("a").text(q.option2.name);
+    $(comps[1]).attr('isCorrect', String(!q.answer));
+    $(comps[1]).children().eq(0).css("background-image", "url("+q.option2.logo+")");
+    $(comps[1]).children().eq(1).addClass("invisible");
+    $(comps[1]).children().eq(1).text(q.option2.value);
+    $(comps[1]).children().eq(1).removeClass("correct");
+    $(comps[1]).children().eq(1).removeClass("incorrect");
 
     $("button").addClass("hide");
 }
@@ -58,8 +69,26 @@ function renderQuestion() {
  * Manipulates the dom to react to one of the options being selected
  * correct or incorrect
  */
-function processAnswer() {
-    this.html
+function processAnswer(sel) {
+    var comps = $('.card-square');
+
+    //comps.unbind('click');
+    //comps.on('click',processAnswer());
+
+    $(comps[0]).children().eq(1).removeClass("invisible");
+    $(comps[1]).children().eq(1).removeClass("invisible");
+
+    if ($(comps[0]).attr("isCorrect") == 'true') {
+        if ($(comps[0]).attr('id') == sel) {
+            $(comps[0]).children().eq(1).addClass("correct");
+        } else {
+            $(comps[1]).children().eq(1).addClass("incorrect");
+        }
+    } else if ($(comps[1]).attr('id') == sel) {
+        $(comps[1]).children().eq(1).addClass("correct");
+    } else {
+        $(comps[0]).children().eq(1).addClass("incorrect");
+    }
 
     $("button").removeClass("hide");
 }
@@ -77,20 +106,21 @@ function questionLoad() {
         // Make api calls and get data for question generation
         try {
             var companyPair = getRandomCompanyPair();
-            var value1 = getMetric(companyPair[0].symbol, questionList[num].metric);
-            var value2 = getMetric(companyPair[1].symbol, questionList[num].metric);
-            var logo1 = getLogo(companyPair[0].symbol);
-            var logo2 = getLogo(companyPair[1].symbol);
+            var value1 = getAllMetrics(companyPair[0].Symbol);
+            var value2 = getAllMetrics(companyPair[1].Symbol);
+            //, questionList[num].metric
+            var logo1 = getLogo(companyPair[0].Symbol);
+            var logo2 = getLogo(companyPair[1].Symbol);
 
             // Create question option objects
             var option1 = {
-                symbol: companyPair[0].symbol,
+                symbol: companyPair[0].Symbol,
                 name: companyPair[0].name,
                 value: value1,
                 logo: logo1
             };
             var option2 = {
-                symbol: companyPair[1].symbol,
+                symbol: companyPair[1].Symbol,
                 name: companyPair[1].name,
                 value: value2,
                 logo: logo2
@@ -119,13 +149,13 @@ function getRandomCompanyPair() {
     var fsap500 = sap500.responseJSON.filter(function(value) { return value.Sector == sector1});
     num = Math.floor(Math.random() * fsap500.length);
     var company2 = fsap500[num];
-    if (company1.symbol == company2.symbol) { throw "same company"; }
+    if (company1.Symbol == company2.Symbol) { throw "same company"; }
     return [company1, company2];
 }
 
 /**
  * Return the value of the specified metric and company symbol
- * @return list containing 2 Name Objects (Option1 Name, Option2 Name, Answer, Option1 Logo Url,
+ * @return a list with all fundamentals for a given symbol
  */
 function getAllMetrics(symbol) {
     // flush out the current contents, if any
@@ -161,7 +191,6 @@ function getLogo(symbol) {
 }
 
 function fuck(){
-    
     var APIURL = "http://www.xignite.com/xLogos.json/GetLogo?IdentifierType=Symbol&Identifier=ATVI&_callback=getMetricReturn";
     var finalURL = APIURL + "&Username=" + token;
 
@@ -178,3 +207,150 @@ function getMetricReturn(data) {
     response = data;
     // console.
 }
+
+var demoList = [
+    {
+        question: "Which firm has a larger 'Market Capitalization'?",
+        answer: false,
+        option1:{
+            symbol: "AMZN",
+            name: "Amazon Inc.",
+            value: "$245.25 Billion",
+            logo: "https://logo.clearbit.com/amazon.com"
+        },
+        option2:{
+            symbol: "MSFT",
+            name: "Microsoft Corp.",
+            value: "$399.26 Billion",
+            logo: "https://logo.clearbit.com/microsoft.com"
+        }
+    },
+    {
+        question: "Which firm has a larger number of employees?",
+        answer: false,
+        option1: {
+            symbol: "ATVI",
+            name: "Activision Blizzard Inc.",
+            value: "6,800",
+            logo: "https://logo.clearbit.com/activision.com"
+        },
+        option2: {
+            symbol: "EA",
+            name: "Electronic Arts Inc.",
+            value: "8,400",
+            logo: "https://logo.clearbit.com/ea.com"
+        }
+    },
+    {
+        question: "Which company holds a higher 'Beta' value?",
+        answer: true,
+        option1:{
+            symbol: "T",
+            name: "AT&T Inc.",
+            value: "0.30",
+            logo: "https://logo.clearbit.com/att.com"
+        },
+        option2:{
+            symbol: "VZ",
+            name: "Verizon Communications Inc.",
+            value: "0.22",
+            logo: "https://logo.clearbit.com/verizon.com"
+        }
+    },
+    {
+        question: "Which company has a higher 'Earnings Per Share' (EPS) value for 2015?",
+        answer: false,
+        option1:{
+            symbol: "YHOO",
+            name: "Yahoo! Inc.",
+            value: "-4.62",
+            logo: "https://logo.clearbit.com/yahoo.com"
+        },
+        option2:{
+            symbol: "MSFT",
+            name: "Microsoft Corp.",
+            value: "1.40",
+            logo: "https://logo.clearbit.com/microsoft.com"
+        }
+    },
+    {
+        question: "Which firm has a more favourable 'Price To Earnings' (P/E) ratio?",
+        answer: false,
+        option1:{
+            symbol: "V",
+            name: "Visa Inc",
+            value: "27.00",
+            logo: "https://logo.clearbit.com/visa.com"
+        },
+        option2:{
+            symbol: "MA",
+            name: "Mastercard Inc",
+            value: "25.37",
+            logo: "https://logo.clearbit.com/mastercard.com"
+        }
+    },
+    {
+        question: "Which stock would be a more favourable choice in terms of 'Institutional Ownership'?",
+        answer: true,
+        option1:{
+            symbol: "CBS",
+            name: "CBS Corporation",
+            value: "89%",
+            logo: "https://logo.clearbit.com/cbs.com"
+        },
+        option2:{
+            symbol: "TWX",
+            name: "Time Warner Inc",
+            value: "85%",
+            logo: "https://logo.clearbit.com/timewarnercable.com"
+        }
+    },
+    {
+        question: "Which firm has a higher 'Dividend Yield Ratio'?",
+        answer: true,
+        option1:{
+            symbol: "STX",
+            name: "Seagate Technology PLC",
+            value: "8.68%",
+            logo: "https://logo.clearbit.com/seagate.com"
+        },
+        option2:{
+            symbol: "SNDK",
+            name: "SanDisk Corp.",
+            value: "1.78%",
+            logo: "https://logo.clearbit.com/sandisk.com"
+        }
+    },
+    {
+        question: "Which firm had more revenue in 2015?",
+        answer: false,
+        option1:{
+            symbol: "TWTR",
+            name: "Twitter Inc.",
+            value: "2218 Million",
+            logo: "https://logo.clearbit.com/twitter.com"
+        },
+        option2:{
+            symbol: "LNKD",
+            name: "LinkedIn",
+            value: "2992 Million",
+            logo: "https://logo.clearbit.com/linkedin.com"
+        }
+    },
+    {
+        question: "Which firm has a higher 'Cash Flow per Share' value?",
+        answer: false,
+        option1:{
+            symbol: "EXPE",
+            name: "Expedia Inc",
+            value: "$4.81/share",
+            logo: "https://logo.clearbit.com/expedia.com"
+        },
+        option2:{
+            symbol: "PCLN",
+            name: "Priceline Group Inc",
+            value: "$54.14/share",
+            logo: "https://logo.clearbit.com/priceline.com"
+        }
+    }
+];
