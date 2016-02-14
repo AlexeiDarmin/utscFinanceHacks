@@ -10,23 +10,22 @@ var questionList = [
     {metric: "Beta", text: "Which has higher beta?"},
     {metric: "TotalOperatingExpenses", text: "Which has more total operating expenses?"}
 ];
-/*EBITDAMargin
-* DividendRate*/
-var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
+
+/**
+ * GLOBALS
+ */
 // used in getLogo
 var logo_url = "";
 // used in getAllMetrics
 var metric_output = [];
-
 var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
-
 var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
 });
-
 var response;
 var errorCount = 0;
 
+window.onload = renderQuestion;
 
 function demoLoad() {
     var nextQ = demoList[0];
@@ -79,7 +78,7 @@ function processAnswer(sel) {
     $(comps[0]).children().eq(1).removeClass("invisible");
     $(comps[1]).children().eq(1).removeClass("invisible");
 
-    if ($(comps[0]).attr("isCorrect") == 'true' && $(comps[0]).id == sel) {
+    if ($(comps[0]).attr("isCorrect") == 'true') {
         if ($(comps[0]).attr('id') == sel) {
             $(comps[0]).children().eq(1).addClass("correct");
         } else {
@@ -107,20 +106,21 @@ function questionLoad() {
         // Make api calls and get data for question generation
         try {
             var companyPair = getRandomCompanyPair();
-            var value1 = getMetric(companyPair[0].symbol, questionList[num].metric);
-            var value2 = getMetric(companyPair[1].symbol, questionList[num].metric);
-            var logo1 = getLogo(companyPair[0].symbol);
-            var logo2 = getLogo(companyPair[1].symbol);
+            var value1 = getAllMetrics(companyPair[0].Symbol);
+            var value2 = getAllMetrics(companyPair[1].Symbol);
+            //, questionList[num].metric
+            var logo1 = getLogo(companyPair[0].Symbol);
+            var logo2 = getLogo(companyPair[1].Symbol);
 
             // Create question option objects
             var option1 = {
-                symbol: companyPair[0].symbol,
+                symbol: companyPair[0].Symbol,
                 name: companyPair[0].name,
                 value: value1,
                 logo: logo1
             };
             var option2 = {
-                symbol: companyPair[1].symbol,
+                symbol: companyPair[1].Symbol,
                 name: companyPair[1].name,
                 value: value2,
                 logo: logo2
@@ -136,6 +136,76 @@ function questionLoad() {
         }
     }
     return question;
+}
+
+/**
+ * Returns two random companies from the same industry
+ * @return list containing 2 Company Objects {symbol, name, sector)
+ */
+function getRandomCompanyPair() {
+    var num = Math.floor(Math.random() * 494);
+    var company1 = sap500.responseJSON[num];
+    var sector1 = company1.Sector;
+    var fsap500 = sap500.responseJSON.filter(function(value) { return value.Sector == sector1});
+    num = Math.floor(Math.random() * fsap500.length);
+    var company2 = fsap500[num];
+    if (company1.Symbol == company2.Symbol) { throw "same company"; }
+    return [company1, company2];
+}
+
+/**
+ * Return the value of the specified metric and company symbol
+ * @return a list with all fundamentals for a given symbol
+ */
+function getAllMetrics(symbol) {
+    // flush out the current contents, if any
+    metric_output = [];
+    var metrics = "CompanyName,Website,";
+    for (var i = 0; i < questionList.length; i++) {
+        if (i == questionList.length - 1) { metrics += questionList[i].metric }
+        else { metrics += questionList[i].metric + ","; }
+    }
+    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=" + metrics + "&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
+    $.getJSON(APIURL, function(data) {
+        for (var i = 0; i < questionList.length; i++) { 
+            metric_output.push(data[0].FundamentalsSets[0].Fundamentals[i].Value); 
+        }
+    });
+    return metric_output;
+}
+
+/**
+ * Return the url of a companies logo given the symbol of the company
+ * @param symbol of company
+ * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
+ */
+function getLogo(symbol) {
+    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=Website&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
+    $.getJSON(APIURL, function(data) {
+        var result = data[0].FundamentalsSets[0].Fundamentals[0].Value; 
+        var start = result.indexOf(".");
+        var domain = result.substring(start + 1, result.length);
+        logo_url = "https://logo.clearbit.com/" + domain;
+    });
+    return logo_url;
+}
+
+function fuck(){
+    var APIURL = "http://www.xignite.com/xLogos.json/GetLogo?IdentifierType=Symbol&Identifier=ATVI&_callback=getMetricReturn";
+    var finalURL = APIURL + "&Username=" + token;
+
+    $.ajax({
+        url:finalURL,
+        dataType: 'jsonp',
+        jsonp : false,
+        jsonpCallback: 'jsonCallback',
+        async: false
+    })
+}
+
+function getMetricReturn(data) {
+    response = data;
+    // console.
 }
 
 var demoList = [
@@ -268,73 +338,3 @@ var demoList = [
         }
     }
 ];
-
-/**
- * Returns two random companies from the same industry
- * @return list containing 2 Company Objects {symbol, name, sector)
- */
-function getRandomCompanyPair() {
-    var num = Math.floor(Math.random() * 494);
-    var company1 = sap500.responseJSON[num];
-    var sector1 = company1.Sector;
-    var fsap500 = sap500.responseJSON.filter(function(value) { return value.Sector == sector1});
-    num = Math.floor(Math.random() * fsap500.length);
-    var company2 = fsap500[num];
-    if (company1.symbol == company2.symbol) { throw "same company"; }
-    return [company1, company2];
-}
-
-/**
- * Return the value of the specified metric and company symbol
- * @return list containing 2 Name Objects (Option1 Name, Option2 Name, Answer, Option1 Logo Url,
- */
-function getAllMetrics(symbol) {
-    // flush out the current contents, if any
-    metric_output = [];
-    var metrics = "CompanyName,Website,";
-    for (var i = 0; i < questionList.length; i++) {
-        if (i == questionList.length - 1) { metrics += questionList[i].metric }
-        else { metrics += questionList[i].metric + ","; }
-    }
-    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=" + metrics + "&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
-    $.getJSON(APIURL, function(data) {
-        for (var i = 0; i < questionList.length; i++) { 
-            metric_output.push(data[0].FundamentalsSets[0].Fundamentals[i].Value); 
-        }
-    });
-    return metric_output;
-}
-
-/**
- * Return the url of a companies logo given the symbol of the company
- * @param symbol of company
- * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
- */
-function getLogo(symbol) {
-    var APIURL = "http://factsetfundamentals.xignite.com/xFactSetFundamentals.json/GetFundamentals?IdentifierType=Symbol&Identifiers=" + symbol + "&FundamentalTypes=Website&AsOfDate=2/12/2016&ReportType=Annual&ExcludeRestated=false&UpdatedSince=&_token" + token;
-    $.getJSON(APIURL, function(data) {
-        var result = data[0].FundamentalsSets[0].Fundamentals[0].Value; 
-        var start = result.indexOf(".");
-        var domain = result.substring(start + 1, result.length);
-        logo_url = "https://logo.clearbit.com/" + domain;
-    });
-    return logo_url;
-}
-
-function fuck(){
-    var APIURL = "http://www.xignite.com/xLogos.json/GetLogo?IdentifierType=Symbol&Identifier=ATVI&_callback=getMetricReturn";
-    var finalURL = APIURL + "&Username=" + token;
-
-    $.ajax({
-        url:finalURL,
-        dataType: 'jsonp',
-        jsonp : false,
-        jsonpCallback: 'jsonCallback',
-        async: false
-    })
-}
-
-function getMetricReturn(data) {
-    response = data;
-    // console.
-}
