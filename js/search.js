@@ -62,32 +62,84 @@ nas = "";
 tsx = "";
 nys = "";
 
+final.sort();
 
+// Build dictionary indexing the starting position of each letter
+var firsts = {"0": 0};
+var previousLetter = "0";
+
+for (i = 0; i < final.length; i++){
+	if (final[i][0].toLowerCase() > previousLetter){
+		firsts[final[i][0].toLowerCase()] = i;
+		previousLetter = final[i][0].toLowerCase();
+	}
+}
+
+console.log(firsts);
 
 function matchPercent(phrase){
 	var Plength = phrase.length;
 	var bestRatio = 0;
-	var bestStart = 10000;
 	var suggestion = "";
-	var ind = 100000;
-	for (i = 0; i < final.length; i++){
-		ind = final[i].toLowerCase().indexOf(phrase.toLowerCase());
-		if(ind < bestStart && ind != -1)
+	var ind;
+	var firstChar = phrase[0].toLowerCase();
+	var i = firsts[firstChar];
+	console.log(final[i][0].toLowerCase(), firstChar);
+	while (final[i][0].toLowerCase() == firstChar){
+		//console.log(i);
+		if (final[i].toLowerCase().indexOf(phrase.toLowerCase()) > -1)
 		{
-			bestStart = ind;
-			bestRatio = Plength/final[i].length;
-			suggestion = final[i];
-		} 
-		else if (ind == bestStart && ind > -1)
-		{
-			console.log(ind);
+			//console.log(ind);
 			if (Plength/final[i].length > bestRatio){
 				bestRatio = Plength/final[i].length;
 				suggestion = final[i];
 			}
 		}
+		i += 1;
 	}
+	console.log(i);
 	return suggestion;
 }
+console.log(matchPercent('ap'));
+// http://codepen.io/nikhil/pen/qcyGF
 
-console.log(matchPercent("lent"));
+  $(document).ready(function(){
+            var submitIcon = $('.searchbox-icon');
+            var inputBox = $('.searchbox-input');
+            var searchBox = $('.searchbox');
+            var isOpen = false;
+            submitIcon.click(function(){
+                if(isOpen == false){
+                    searchBox.addClass('searchbox-open');
+                    inputBox.focus();
+                    isOpen = true;
+                } else {
+                    searchBox.removeClass('searchbox-open');
+                    inputBox.focusout();
+                    isOpen = false;
+                }
+            });  
+             submitIcon.mouseup(function(){
+                    return false;
+                });
+            searchBox.mouseup(function(){
+                    return false;
+                });
+            $(document).mouseup(function(){
+                    if(isOpen == true){
+                        $('.searchbox-icon').css('display','block');
+                        submitIcon.click();
+                    }
+                });
+        });
+            function buttonUp(){
+                var inputVal = $('.searchbox-input').val();
+                console.log(matchPercent(inputVal));
+                inputVal = $.trim(inputVal).length;
+                if( inputVal !== 0){
+                   //$( '.searchbox-icon').css('display','none');
+                } else {
+                    $('.searchbox-input').val('');
+                    $('.searchbox-icon').css('display','block');
+                }
+            }
