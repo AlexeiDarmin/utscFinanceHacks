@@ -61,6 +61,7 @@ var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
 var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
 });
+
 var response;
 var errorCount = 0;
 
@@ -77,8 +78,8 @@ function demoLoad() {
  * Manipulates the dom to show a new question
  */
 function renderQuestion() {
-    var q = demoLoad();
-    //var q = questionLoad();
+    // var q = demoLoad();
+    var q = question;
 
     $(".question").text(q.question);
 
@@ -164,13 +165,15 @@ function questionLoad() {
 }
 
 function check() {
-    $.get("", checkCallback);
-
+    $.get("", checkCallBack);
 }
 
 function checkCallBack() {
     if (option1.value && option2.value) {
         question.answer = option1.value > option2.value;
+        question.option1 = option1;
+        question.option2 = option2;
+        renderQuestion();
     } else {
         check();
     }
@@ -229,14 +232,19 @@ function caller1(data) {
     // }
 
     var symbol = data[0].Company.Symbol;
+
     if (option1.symbol == symbol) {
         option1.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+        option1.name = data[0].Company.Name;
     } else if (option2.symbol == symbol) {
         option2.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+        option2.name = data[0].Company.Name;
     } else if (!option1.symbol) {
         option1.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+        option1.name = data[0].Company.Name;
     } else {
         option2.value = data[0].FundamentalsSets[0].Fundamentals[0].Value;
+        option1.name = data[0].Company.Name;
     }
 }
 
