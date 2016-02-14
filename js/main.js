@@ -21,7 +21,27 @@ var questionList = [
                     option2: option2};
 */
 
-var question = {};
+var question;
+var option1;
+var option2;
+function initMain(){
+    question = {};
+
+    option1 = {
+        symbol: "",
+        name: "",
+        value: "",
+        logo: ""
+    };
+
+    option2 = {
+        symbol: "",
+        name: "",
+        value: "",
+        logo: ""
+    };
+
+}
 
 // Create question option objects
 // var option1 = {
@@ -37,19 +57,6 @@ var question = {};
 //     value: value2,
 //     logo: logo2
 // };
-var option1 = {
-    symbol: "",
-    name: "",
-    value: "",
-    logo: ""
-};
-
-var option2 = {
-    symbol: "",
-    name: "",
-    value: "",
-    logo: ""
-};
 
 // used in getLogo
 var logo_url = "";
@@ -65,7 +72,7 @@ var sap500 = $.getJSON("static/constituents.json", function(json) {
 var response;
 var errorCount = 0;
 
-window.onload = questionLoad;
+window.onload = renderHelper;
 
 function demoLoad() {
     var nextQ = demoList[0];
@@ -73,22 +80,26 @@ function demoLoad() {
     return nextQ;
 }
 
+function renderHelper(){
+    initMain();
+    if (demoList.length > 0) {
+        renderQuestion()
+    } else {
+        questionLoad();
+    }
+}
+
 /**
  * Manipulates the dom to show a new question
  */
 function renderQuestion() {
-<<<<<<< HEAD
-    // var q = demoLoad();
-    var q = question;
-    console.log(q);
-=======
     if (demoList.length > 0) {
         var q = demoLoad();
+
     } else {
         var q = question;
     }
 
->>>>>>> b023abd273cb21f296c4c7c021536e0deb956871
     $(".question").text(q.question);
 
     var comps = $('.card-square');
