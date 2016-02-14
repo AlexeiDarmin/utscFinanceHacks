@@ -96,10 +96,28 @@ function matchPercent(phrase){
 		//console.log(i);
 		if (final[i].toLowerCase().indexOf(phrase.toLowerCase()) > -1)
 		{
-			//console.log(ind);
-			if (Plength/final[i].length > bestRatio){
-				bestRatio = Plength/final[i].length;
-				suggestion = final[i];
+			if (Plength > 1 ){
+				if (phrase.toLowerCase()[1] == final[i][1].toLowerCase()){
+					if (Plength > 2 ){
+						if (phrase.toLowerCase()[2] == final[i][2].toLowerCase()){
+						//console.log(ind);
+							if (Plength/final[i].length > bestRatio){
+								bestRatio = Plength/final[i].length;
+								suggestion = final[i];
+							}
+						}
+					} else {
+						if (Plength/final[i].length > bestRatio){
+							bestRatio = Plength/final[i].length;
+							suggestion = final[i];
+						}
+					}
+				}
+			} else {
+				if (Plength/final[i].length > bestRatio){
+					bestRatio = Plength/final[i].length;
+					suggestion = final[i];
+				}
 			}
 		}
 		i += 1;
