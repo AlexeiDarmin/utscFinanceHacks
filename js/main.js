@@ -226,19 +226,19 @@ var demoList = [
         }
     },
     {
-        question: "Which firm has a larger 'Market Capitalization'?",
-        answer: true,
+        question: "Which firm has a larger number of employees?",
+        answer: false,
         option1: {
-            symbol: "AMZN",
-            name: "Amazon.com, Inc.",
-            value: "$240.30 Billion",
-            logo: "https://logo.clearbit.com/amazon.com"
+            symbol: "ATVI",
+            name: "Activision Blizzard Inc.",
+            value: "6,800",
+            logo: "https://logo.clearbit.com/activision.com"
         },
         option2: {
-            symbol: "EBAY",
-            name: "eBay Inc",
-            value: "$27.00 Billion",
-            logo: "https://logo.clearbit.com/ebay.ca"
+            symbol: "EA",
+            name: "Electronic Arts Inc.",
+            value: "8,400",
+            logo: "https://logo.clearbit.com/ea.com"
         }
     },
     {
@@ -319,6 +319,22 @@ var demoList = [
             name: "SanDisk Corp.",
             value: "1.78%",
             logo: "https://logo.clearbit.com/sandisk.com"
+        }
+    },
+    {
+        question: "Which firm had more revenue in 2015?",
+        answer: false,
+        option1:{
+            symbol: "TWTR",
+            name: "Twitter Inc.",
+            value: "2218 Million",
+            logo: "https://logo.clearbit.com/twitter.com"
+        },
+        option2:{
+            symbol: "LNKD",
+            name: "LinkedIn",
+            value: "2992 Million",
+            logo: "https://logo.clearbit.com/linkedin.com"
         }
     },
     {
