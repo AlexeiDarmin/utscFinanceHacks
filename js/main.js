@@ -70,7 +70,6 @@ window.onload = renderQuestion;
 function demoLoad() {
     var nextQ = demoList[0];
     demoList.shift();
-    demoList.push(nextQ);
     return nextQ;
 }
 
@@ -78,8 +77,11 @@ function demoLoad() {
  * Manipulates the dom to show a new question
  */
 function renderQuestion() {
-    // var q = demoLoad();
-    var q = question;
+    if (demoList.length > 0) {
+        var q = demoLoad();
+    } else {
+        var q = question;
+    }
 
     $(".question").text(q.question);
 
@@ -298,7 +300,6 @@ function fuck(){
 
 function getMetricReturn(data) {
     response = data;
-    // console.
 }
 
 var demoList = [
