@@ -16,7 +16,48 @@ var questionList = [
 var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
 });
+
+jQuery.ajaxSetup({async:false});
+
 var response;
+
+$("button").click(renderQuestion());
+
+/**
+ * Manipulates the dom to show a new question
+ */
+function renderQuestion() {
+    var q = questionLoad();
+    $(".question").text(q.question);
+
+    var comps = $('.card-square');
+
+    // Update titles, images and correct values for the new question
+    comps[0].find("a").text(q.option1.name);
+    comps[0].attr('isCorrect', String(q.answer));
+    comps[0].child(1).css("background-image", "url("+q.option1.logo+")");
+
+    comps[1].find("a").text(q.option2.name);
+    comps[1].attr('isCorrect', String(!q.answer));
+    comps[1].child(1).css("background-image", "url("+q.option2.logo+")");
+
+    // Bind click actions to the two options
+    comps.unbind('click');
+    comps.click(processAnswer());
+
+    $("button").addClass("hide");
+}
+
+/**
+ * Manipulates the dom to react to one of the options being selected
+ * correct or incorrect
+ */
+function processAnswer() {
+    this.html
+
+    $("button").removeClass("hide");
+}
+
 /**
  * Generates the data for a question to be displayed
  * @return list containing Question, Option1 Name, Option2 Name, Answer, Option1 Logo Url,
@@ -82,7 +123,6 @@ function getRandomCompanyPair() {
 function getMetric(symbol, metric) {
 
     fuck();
-
     console.log(response);
 }
 
@@ -97,13 +137,15 @@ function getLogo(symbol) {
 
 function fuck(){
     var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
-    var APIURL = "http://www.xignite.com/xLogos.json/GetLogo?IdentifierType=Symbol&Identifier=ATVI&_callback=getLogoReturn";
+    var APIURL = "http://www.xignite.com/xLogos.json/GetLogo?IdentifierType=Symbol&Identifier=ATVI&_callback=getMetricReturn";
     var finalURL = APIURL + "&Username=" + token;
+
     $.ajax({
-    url:finalURL,
-    dataType: 'jsonp',
-    jsonp : false,
-    jsonpCallback: 'jsonCallback'
+        url:finalURL,
+        dataType: 'jsonp',
+        jsonp : false,
+        jsonpCallback: 'jsonCallback',
+        async: false
     })
 }
 
