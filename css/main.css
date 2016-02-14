@@ -321,6 +321,23 @@ body{
   color: #d74b4b;
 }
 
+#autofill{
+  display:block;
+  z-index:100;
+  background:black;
+  position:absolute;
+  width:200px;
+  height:75px;
+    border:0;
+    outline:0;
+    background:black;
+    height:30px;
+    margin:0px 0px 0px -5px;
+    padding:5px 15px 5px 10px;
+    font-size:14px;
+    color:white;
+}
+
 
 /* ==========================================================================
    Helper classes

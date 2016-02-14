@@ -78,6 +78,13 @@ for (i = 0; i < final.length; i++){
 console.log(firsts);
 
 function matchPercent(phrase){
+	if (phrase == "") {
+		$('#autofill').addClass('hidden');
+	} else {
+		if ($('#autofill').hasClass('hidden')){
+			$('#autofill').removeClass('hidden');
+		}
+	}
 	var Plength = phrase.length;
 	var bestRatio = 0;
 	var suggestion = "";
@@ -97,10 +104,16 @@ function matchPercent(phrase){
 		}
 		i += 1;
 	}
-	console.log(i);
+	if (suggestion == "") {
+		$('#autofill').addClass('hidden');
+	} else {
+		if ($('#autofill').hasClass('hidden')){
+			$('#autofill').removeClass('hidden');
+		}
+		$('#autofill').val(suggestion);
+	}
 	return suggestion;
 }
-console.log(matchPercent('ap'));
 // http://codepen.io/nikhil/pen/qcyGF
 
   $(document).ready(function(){
