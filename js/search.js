@@ -133,6 +133,10 @@ function matchPercent(phrase){
 	return suggestion;
 }
 // http://codepen.io/nikhil/pen/qcyGF
+function searchFunc(){
+	$('#autofill').addClass('hidden');
+	alert('hello world');
+}
 
   $(document).ready(function(){
             var submitIcon = $('.searchbox-icon');
@@ -156,6 +160,7 @@ function matchPercent(phrase){
             searchBox.mouseup(function(){
                     return false;
                 });
+
             $(document).mouseup(function(){
                     if(isOpen == true){
                         $('.searchbox-icon').css('display','block');
