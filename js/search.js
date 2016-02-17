@@ -91,29 +91,43 @@ function matchPercent(query){
 	}
 
 	// Initializing vars to track quality of match
-	var Plength = query.length;
-	var bestRatio = 0;
-	var suggestion = "";
-	var ind;
+	var suggestion, ind;
+
+	// First character of query in lowercase
 	var firstQueryChar = query[0].toLowerCase();
+
+	// starting index denoted by the index of the first character (ie 'a')
 	var i = firstCharsIndexDict[firstQueryChar];
 
+	// Ending index denoted by the index of the next first character (ie 'b')
+  var endIndex = firstCharsIndexDict[String.fromCharCode(firstQueryChar.charCodeAt(0) + 1)];
+
+  
+	if (query.length > 1){
+		var secondQueryChar = query[1].toLowerCase();
+
+		// Reduce domain by 2nd character
+    var middleIndex = Math.floor((i + endIndex)/2);
+    var middleChar = final[middleIndex].toLowerCase();
+  	if (middleChar < secondQueryChar){
+  	  i = middleIndex;
+    } else if (middleChar > secondQueryChar){
+    	endIndex = middleIndex;
+    } else{
+      i += middleIndex / 2;
+      endIndex -= middleIndex / 2;
+    }
+	}
+
 	// Search for the first occurance of query at the start of a company name
-	while (final[i][0].toLowerCase() == firstQueryChar && final[i].toLowerCase().indexOf(query.toLowerCase()) != 0){
+	while (i < endIndex && final[i].toLowerCase().indexOf(query.toLowerCase()) != 0){
 		i += 1;
 	}
-
-	while (final[i].toLowerCase().indexOf(query.toLowerCase()) == 0) {
-	  // Select the shortest company name, thus query takes up largest %.
-		if (Plength/final[i].length > bestRatio){
-			bestRatio = Plength/final[i].length;
-			suggestion = final[i];
-		}
-		i += 1;
-	}
-
+	if (final[i].toLowerCase().indexOf(query.toLowerCase()) == 0){
+	  suggestion = final[i];
+  }
 	// Front end stuff
-	if (suggestion == "") {
+	if (!suggestion) {
 		$('#autofill').addClass('hidden');
 	} else {
 		if ($('#autofill').hasClass('hidden')){
