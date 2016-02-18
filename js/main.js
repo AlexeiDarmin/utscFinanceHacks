@@ -72,10 +72,10 @@ var logo_url = "";
 // var metric_output = "";
 
 var token = "FCAC0E1A3DB14E33993F2F10C1A281BA";
-var sap500 = $.getJSON("static/constituents.json", function(json) {
+/*var sap500 = $.getJSON("static/constituents.json", function(json) {
     return json;
 });
-
+*/
 var response;
 var errorCount = 0;
 

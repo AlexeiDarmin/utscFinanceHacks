@@ -1,3 +1,13 @@
+// Create random string of length x
+function randString(x){
+    var s = "";
+    while(s.length<x&&x>0){
+        var r = Math.random();
+        s+= (r<0.1?Math.floor(r*100):String.fromCharCode(Math.floor(r*26) + (r>0.5?97:65)));
+    }
+    return s;
+}
+
 // Get company lists
 var tsx = TSXjson.Companies;
 var nys = NYSjson.Companies;
@@ -13,7 +23,6 @@ NYSjson = null;
 var final = [];
 
 // Collect names from each exchange
-count = 0
 for (i = 0; i < nys.length; i++){
 	final.push(nys[i].Name);
 }
@@ -24,12 +33,21 @@ for (i = 0; i < tsx.length; i++){
 	final.push(tsx[i].Name);
 }
 
+for (i = 0; i < 25000000; i++){
+	final.push(randString(3));
+}
+
+
 // Free up memory
 nas = null;
 tsx = null;
 nys = null;
 
 final.sort();
+
+
+console.log(final.length);
+
 
 // Build dictionary to store the index of each first letter
 var firstCharsIndexDict = {"0": 0};
