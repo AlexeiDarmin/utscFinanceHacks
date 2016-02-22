@@ -60,6 +60,11 @@ for (i = 0; i < final.length; i++){
 		previousLetter = final[i][0].toLowerCase();
 	}
 }
+	// starting index denoted by the index of the first character (ie 'a')
+	var i = 0;
+
+	// Ending index denoted by the index of the next first character (ie 'b')
+	var endIndex = 7174;
 
 // Primary search function
 function matchPercent(query){
@@ -72,24 +77,22 @@ function matchPercent(query){
 			$('#autofill').removeClass('hidden');
 		}
 	}
-	// starting index denoted by the index of the first character (ie 'a')
-	var i = 0;
-
-	// Ending index denoted by the index of the next first character (ie 'b')
-	var endIndex = 7174;
 
 	// Initializing vars to track quality of match
 	var suggestion, ind;
+	i = 0;
+	endIndex = 7174;
 
 	// First character of query in lowercase
 	var firstQueryChar = query[0].toLowerCase();
 
-	for (j = 0; j < query.length; j++){
-		binarySearchByChar(i, final.length, query, j);
+	// Apply binary search per character of query
+	for (p = 0; p < query.length; p++){
+		binarySearchByChar(query.toLowerCase(), p);
 	}
 
 	// Search for the first occurance of query at the start of a company name
-	while (i < endIndex && final[i].toLowerCase().indexOf(query.toLowerCase()) != 0){
+	while (i <= endIndex && final[i].toLowerCase().indexOf(query.toLowerCase()) != 0){
 		i += 1;
 	}
 	if (final[i].toLowerCase().indexOf(query.toLowerCase()) == 0){
@@ -109,40 +112,87 @@ function matchPercent(query){
 	return suggestion;
 }
 
+// Returns the border index where querychar occurs (afterwhich some other char occurs).
+function binarySplitLeft(start, finish, queryChar, charPosition){
+	//debugger;
+	var middle = Math.floor((finish - start) / 2) + start;
+	var midChar = final[middle][charPosition].toLowerCase();
+	if (midChar < queryChar){
+		if (final[middle + 1][charPosition].toLowerCase() != queryChar){
+  	   		binarySplitLeft(middle + 1, finish, queryChar, charPosition)
+  	   	} else {
+  	   		i = middle + 1;
+  	   	}
+    } else {
+    	if (final[middle - 1][charPosition].toLowerCase() != queryChar){
+    		binarySplitLeft(start, middle - 1, queryChar, charPosition);
+    	} else {
+    		endIndex = middle;
+    	}
+    }
+}
+
+// Updates the border index where querychar occurs (afterwhich some other char occurs).
+function binarySplitRight(start, finish, queryChar, charPosition){
+	//debugger;
+	var middle = Math.floor((finish - start) / 2) + start;
+	var midChar = final[middle][charPosition].toLowerCase();
+	if (midChar > queryChar){
+		if (final[middle - 1][charPosition].toLowerCase() != queryChar){
+  	   		binarySplitLeft(start, middle - 1, queryChar, charPosition)
+  	   	} else {
+  	   		endIndex = middle - 1;
+  	   	}
+    } else {
+    	if (final[middle + 1][charPosition].toLowerCase() == queryChar){
+    		binarySplitLeft(middle + 1, finish, queryChar, charPosition);
+    	} else {
+    		i = middle;
+    	}
+    }
+}
+
+
 /*
  * Computes the range where the letter at charPosition of query occurs within search domain (list).
  *
  * returns (String) representing the most likely word on this iteration
  */
-function binarySearchByChar(startInd, endInd, query, charPosition){
-	var midInd = Math.floor((endInd - startInd) / 2) + startInd;
+function binarySearchByChar(query, charPosition){
+	var midInd = Math.floor((endIndex - i) / 2) + i;
+	console.log(i, endIndex, query);
 	var midChar = final[midInd][charPosition].toLowerCase();
-	var queryChar = query[charPosition].toLowerCase();
-
+	var queryChar = query[charPosition];
+	//debugger;
 	if (midChar < queryChar){
   	    i = midInd - 1;
-  	    return binarySearchByChar(i, endInd, query, charPosition);
+  	    binarySearchByChar(query, charPosition);
     } else if (midChar > queryChar){
     	endIndex = midInd + 1;
-    	return binarySearchByChar(startInd, endIndex, query, charPosition);
+    	binarySearchByChar(query, charPosition);
     } else {
-
-    	// Gets earliest occurance s
-    	j = 1;
-    	while (final[j + midInd][charPosition].toLowerCase() == queryChar){
-    		j += 1;
-    	}
-
-    	k = 0;
-    	while (final[midInd - k][charPosition].toLowerCase() == queryChar){
-    		k += 1;
-    	}
-
-    	i = midInd - k + 1;
-    	endIndex = midInd + j - 1;
-
-    	console.log(final[Math.floor((endIndex - i) / 2) + startInd]);
-      	return final[Math.floor((endIndex - i) / 2) + startInd];
+    	// Check if query is a perfect match
+    	if (query == final[midInd].substring(0, query.length).toLowerCase()){
+    		i = midInd;
+    		endIndex = midInd;
+	      	//return final[Math.floor((endIndex - i) / 2) + startInd];
+    	} else {
+    		//debugger;
+	    	// Since not a perfect match, split array
+	    	for (j = charPosition; j < query.length; j++){
+	    		if (query[j] > final[midInd][j].toLowerCase()){
+	    			i = midInd + 1;
+	    			binarySplitRight(i, endIndex, query[j], j);
+	    			//return final[Math.floor((endIndex - i) / 2) + startInd];
+	    		}
+	    		// Split towards right
+	    		else if (query[j] < final[midInd][j].toLowerCase()){ 
+	    			endIndex = midInd - 1;
+	    			binarySplitLeft(i, endIndex, query[j], j);
+	    			//return final[Math.floor((endIndex - i) / 2) + startInd];
+	    		}
+	    	}
+	    }
     }
 }
 
